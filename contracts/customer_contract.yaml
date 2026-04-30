@@ -1,0 +1,62 @@
+name: customer_contract
+version: "1.0"
+owner: data-engineering
+description: Contrato de qualidade para dados de clientes
+
+schema:
+  customer_id:
+    type: string
+    required: true
+    unique: true
+  name:
+    type: string
+    required: true
+    min_length: 2
+    max_length: 200
+  email:
+    type: string
+    required: true
+    pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+  cpf:
+    type: string
+    pattern: "^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$"
+  age:
+    type: integer
+    min: 18
+    max: 120
+  segment:
+    type: string
+    allowed_values: [basic, regular, premium, vip]
+
+quality_rules:
+  - rule: no_null_customer_ids
+    expectation: expect_column_values_to_not_be_null
+    column: customer_id
+    severity: critical
+  - rule: unique_customer_ids
+    expectation: expect_column_values_to_be_unique
+    column: customer_id
+    severity: critical
+  - rule: valid_email
+    expectation: expect_column_values_to_match_regex
+    column: email
+    regex: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+    severity: critical
+  - rule: valid_cpf_format
+    expectation: expect_column_values_to_match_regex
+    column: cpf
+    regex: "^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$"
+    severity: warning
+
+sla:
+  validation_frequency: daily
+  max_failure_resolution_time: 8h
+  notification_channels: [slack, email]
+
+notifications:
+  slack:
+    webhook_url: ${SLACK_WEBHOOK_URL}
+    channel: "#data-quality"
+  email:
+    recipients: ["data-engineering@company.com"]
+    subject_template: "Data Quality Alert: {suite_name}"
