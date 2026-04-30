@@ -1,8 +1,8 @@
 # Data Quality Framework
 
-Framework de qualidade e governanca de dados com Great Expectations: validacao de schemas, testes de integridade, data contracts e relatorios automatizados.
+Data quality and governance framework with Great Expectations: schema validation, integrity tests, data contracts, and automated reporting.
 
-## Arquitetura
+## Architecture
 
 ```
 +------------------+     +------------------+     +------------------+
@@ -29,48 +29,47 @@ Framework de qualidade e governanca de dados com Great Expectations: validacao d
 
 ## Data Contracts
 
-Cada fonte de dados possui um contrato definido em YAML:
+Each data source has a contract defined in YAML:
 
-- **Schema**: Tipos, campos obrigatorios, restricoes
-- **Quality Rules**: Faixas de valor, unicidade, integridade referencial
-- **SLAs**: Frequencia de validacao, tempo maximo de resolucao
-- **Owner**: Responsavel pela qualidade daquela fonte
+- **Schema**: Types, required fields, constraints
+- **Quality Rules**: Value ranges, uniqueness, referential integrity
+- **SLAs**: Validation frequency, max resolution time
+- **Owner**: Responsible party for that source's quality
 
-## Como Usar
+## Usage
 
 ```bash
-# Instalar dependencias
 pip install -r requirements.txt
 
-# Executar validacao completa
+# Run full validation
 python scripts/run_validation.py --suite transaction_suite
 
-# Gerar expectation suite a partir de profiling
+# Generate expectation suite from profiling
 python scripts/generate_expectations.py --data ./data/sample.csv
 
-# Validar contrato
+# Validate contract
 python scripts/run_validation.py --contract contracts/transaction_contract.yaml
 ```
 
-## Quality Rules Implementadas
+## Quality Rules
 
-| Regra | Tipo | Descricao |
-|-------|------|-----------|
-| `expect_column_values_to_not_be_null` | Integridade | Campos obrigatorios sem null |
-| `expect_column_values_to_be_unique` | Unicidade | IDs sem duplicata |
-| `expect_column_values_to_be_between` | Faixa | Valores dentro do intervalo esperado |
-| `expect_column_values_to_match_regex` | Formato | Email, CPF com formato valido |
-| `expect_table_row_count_to_be_between` | Volume | Quantidade de registros dentro do esperado |
+| Rule | Type | Description |
+|------|------|-------------|
+| `expect_column_values_to_not_be_null` | Integrity | Required fields without nulls |
+| `expect_column_values_to_be_unique` | Uniqueness | IDs without duplicates |
+| `expect_column_values_to_be_between` | Range | Values within expected bounds |
+| `expect_column_values_to_match_regex` | Format | Email, CPF with valid format |
+| `expect_table_row_count_to_be_between` | Volume | Row count within expected range |
 
-## Decisoes Tecnicas
+## Technical Decisions
 
-**Por que Great Expectations e nao Pandera?** GE tem ecossistema mais maduro: expectation suites reutilizaveis, data docs automaticas, integracao com dbt/Airflow. Pandera e mais leve mas limitado para governanca em escala. GE permite versionar expectations junto com o codigo.
+**Why Great Expectations over Pandera?** GE has a more mature ecosystem: reusable expectation suites, automatic data docs, dbt/Airflow integration. Pandera is lighter but limited for governance at scale. GE allows versioning expectations alongside code.
 
-**Por que Data Contracts?** Contratos formalizam a responsabilidade sobre a qualidade do dado. Em vez de testes ad-hoc, cada fonte tem um contrato que define: o que e esperado, quem e responsavel, e o que acontece quando falha. Isso transforma qualidade de dados de atividade reativa em processo proativo.
+**Why Data Contracts?** Contracts formalize responsibility for data quality. Instead of ad-hoc tests, each source has a contract defining: what is expected, who is responsible, and what happens on failure. This transforms data quality from reactive to proactive.
 
-**Por que Expectation Suites versionadas?** Suites sao JSON versionados no git. Mudancas na qualidade do dado passam por code review, igual mudancas no codigo. Historico de mudancas nas regras e auditavel.
+**Why versioned Expectation Suites?** Suites are versioned JSON files in git. Changes to data quality go through code review, just like code changes. The history of rule changes is auditable.
 
-## Estrutura
+## Structure
 
 ```
 data-quality-framework/
@@ -81,28 +80,28 @@ data-quality-framework/
     transaction_contract.yaml
     customer_contract.yaml
   scripts/
-    run_validation.py        # Executar validacoes
-    generate_expectations.py # Auto-gerar suites
+    run_validation.py        # Run validations
+    generate_expectations.py # Auto-generate suites
   src/
-    validators/              # Validadores customizados
+    validators/              # Custom validators
       base_validator.py
       transaction_validator.py
       customer_validator.py
-    notifiers/               # Alertas
+    notifiers/               # Alerts
       slack_notifier.py
       email_notifier.py
     reports/
-      quality_report.py      # Relatorios HTML
+      quality_report.py      # HTML reports
   tests/
     test_validators.py
     test_contracts.py
   .github/
     workflows/
-      quality-check.yml      # CI: validacao em sample data
+      quality-check.yml      # CI: validation on sample data
   docs/
     decisions.md             # Architecture Decision Records
 ```
 
 ---
 
-**Autor:** Diego Brito
+Author: Diego Brito
