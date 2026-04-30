@@ -1,0 +1,63 @@
+name: transaction_contract
+version: "1.0"
+owner: data-engineering
+description: Contrato de qualidade para dados de transacoes financeiras
+
+schema:
+  transaction_id:
+    type: string
+    required: true
+    unique: true
+    pattern: "^TXN-[A-Z0-9]{8,}$"
+  customer_id:
+    type: string
+    required: true
+  amount:
+    type: float
+    required: true
+    min: 0.01
+    max: 1000000
+  transaction_date:
+    type: datetime
+    required: true
+  status:
+    type: string
+    required: true
+    allowed_values: [pending, completed, failed, refunded]
+  channel:
+    type: string
+    allowed_values: [online, in_store, mobile, api]
+
+quality_rules:
+  - rule: no_null_transaction_ids
+    expectation: expect_column_values_to_not_be_null
+    column: transaction_id
+    severity: critical
+  - rule: unique_transaction_ids
+    expectation: expect_column_values_to_be_unique
+    column: transaction_id
+    severity: critical
+  - rule: positive_amounts
+    expectation: expect_column_values_to_be_between
+    column: amount
+    min: 0.01
+    max: 1000000
+    severity: critical
+  - rule: valid_status
+    expectation: expect_column_values_to_be_in_set
+    column: status
+    values: [pending, completed, failed, refunded]
+    severity: warning
+
+sla:
+  validation_frequency: hourly
+  max_failure_resolution_time: 4h
+  notification_channels: [slack, email]
+
+notifications:
+  slack:
+    webhook_url: ${SLACK_WEBHOOK_URL}
+    channel: "#data-quality"
+  email:
+    recipients: ["data-engineering@company.com"]
+    subject_template: "Data Quality Alert: {suite_name}"
