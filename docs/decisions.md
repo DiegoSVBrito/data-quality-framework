@@ -1,46 +1,46 @@
-# Decisoes Tecnicas
+# Technical Decisions
 
 ## ADR-001: Great Expectations over Pandera
 
-**Status:** Aceito
+**Status:** Accepted
 
-**Contexto:** Framework de validacao de dados para pipeline de qualidade.
+**Context:** Data validation framework for quality pipeline.
 
-**Decisao:** Utilizar Great Expectations.
+**Decision:** Use Great Expectations.
 
-**Motivos:**
-- Ecossistema mais maduro com integracao nativa a dbt, Airflow e Spark
-- Expectation Suites JSON sao versionaveis e auditaveis
-- Data Docs geram documentacao automatica de qualidade
-- Suporte a multiplos datasources (Pandas, Spark, SQL)
-- Comunidade maior e documentacao mais completa
+**Rationale:**
+- More mature ecosystem with native dbt, Airflow, Spark integration
+- JSON Expectation Suites are versionable and auditable
+- Data Docs auto-generate quality documentation
+- Multiple datasource support (Pandas, Spark, SQL)
+- Larger community and more complete documentation
 
-**Trade-off:** Mais pesado que Pandera. Para validacoes simples em scripts, Pandera seria mais leve. Mas para governanca em escala, GE compensa.
+**Trade-off:** Heavier than Pandera. For simple validations in scripts, Pandera would be lighter. But for governance at scale, GE is worth it.
 
 ## ADR-002: Data Contracts Pattern
 
-**Status:** Aceito
+**Status:** Accepted
 
-**Contexto:** Formalizacao de responsabilidades sobre qualidade do dado.
+**Context:** Formalizing responsibilities for data quality.
 
-**Decisao:** Implementar Data Contracts em YAML para cada fonte de dados.
+**Decision:** Implement Data Contracts in YAML for each data source.
 
-**Motivos:**
-- Contratos transformam qualidade de dados em processo proativo
-- Schema, regras, SLAs e owner definidos em um arquivo versionavel
-- Mudancas no contrato passam por code review
-- Contratos sao a "interface" entre produtores e consumidores de dados
+**Rationale:**
+- Contracts make data quality a proactive process
+- Schema, rules, SLAs, and owner defined in a versioned file
+- Contract changes go through code review
+- Contracts serve as the interface between data producers and consumers
 
-## ADR-003: Expectation Suites Versionadas
+## ADR-003: Versioned Expectation Suites
 
-**Status:** Aceito
+**Status:** Accepted
 
-**Contexto:** Gerenciamento das regras de validacao ao longo do tempo.
+**Context:** Managing validation rules over time.
 
-**Decisao:** Versionar expectation suites como JSON no repositorio.
+**Decision:** Version expectation suites as JSON in the repository.
 
-**Motivos:**
-- Historico de mudancas nas regras e auditavel via git
-- Code review em mudancas de qualidade
-- Rollback simples em caso de regressao
-- Suites sao imutaveis por versao, garantindo reprodutibilidade
+**Rationale:**
+- Change history is auditable via git
+- Code review on quality changes
+- Simple rollback on regressions
+- Suites are immutable per version, ensuring reproducibility
